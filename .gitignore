@@ -3,7 +3,13 @@
 /node_modules
 
 # database
-postgres/
+/postgres
+
+# Env
+.env
+.env.prod
+
+
 
 # Logs
 logs

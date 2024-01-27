@@ -4,7 +4,23 @@
 
 # Teslo API
 
+1. Clone the project
+1. Run
+
+   ```
+   yarn install
+   ```
+
+1. Rename `.env.template` to `.env`
+1. Set the environment varibles
+
 1. Run database
+
    ```
    docker-compose up -d
+   ```
+
+1. Run the project
+   ```
+   yarn start:dev
    ```
