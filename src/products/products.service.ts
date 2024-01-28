@@ -48,6 +48,9 @@ export class ProductsService {
       take: limit,
       skip: offset,
       order: { title: 1 },
+      relations: {
+        images: true,
+      },
     });
   }
 
