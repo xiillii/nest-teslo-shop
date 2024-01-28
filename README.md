@@ -20,6 +20,12 @@
    docker-compose up -d
    ```
 
+1. Execute Seed
+
+   ```
+   localhost:port/api/seed
+   ```
+
 1. Run the project
    ```
    yarn start:dev
