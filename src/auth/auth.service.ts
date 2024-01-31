@@ -27,7 +27,7 @@ export class AuthService {
       const { password, email, ...userData } = createUserDto;
       const user = this.userRepository.create({
         ...userData,
-        email: email.toLocaleLowerCase(),
+        email: email,
         password: bcrypt.hashSync(password, 10),
       });
 
