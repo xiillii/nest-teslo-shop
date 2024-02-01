@@ -1,11 +1,4 @@
-import {
-  Controller,
-  Post,
-  Body,
-  Get,
-  UseGuards,
-  SetMetadata,
-} from '@nestjs/common';
+import { Controller, Post, Body, Get, UseGuards } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { CreateUserDto, LoginUserDto } from './dto';
 import { AuthGuard } from '@nestjs/passport';
@@ -13,7 +6,7 @@ import { User } from './entities/user.entity';
 import { GetUser } from './decorators/get-user.decorator';
 import { RawHeaders } from 'src/common/decorators/raw-headers.decorator';
 import { UserRoleGuard } from './guards/user-role/user-role.guard';
-import { RoleProtected } from './decorators';
+import { Auth, RoleProtected } from './decorators';
 import { ValidRoles } from './interfaces';
 
 @Controller('auth')
@@ -45,6 +38,12 @@ export class AuthController {
   @RoleProtected(ValidRoles.superUser, ValidRoles.user)
   @UseGuards(AuthGuard(), UserRoleGuard)
   onlyAdmin(@GetUser() user: User) {
+    return user;
+  }
+
+  @Get('only-admin-composed')
+  @Auth(ValidRoles.superUser, ValidRoles.admin)
+  onlyAdminComposed(@GetUser() user: User) {
     return user;
   }
 }
