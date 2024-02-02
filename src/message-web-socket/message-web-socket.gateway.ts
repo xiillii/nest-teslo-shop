@@ -15,10 +15,18 @@ export class MessageWebSocketGateway
   ) {}
 
   handleConnection(client: Socket, ...args: any[]) {
-    console.log(`Client connected${client.id} with arguments ${args}`);
+    this.messageWebSocketService.registerClient(client);
+
+    console.log(
+      `Connected Clients: ${this.messageWebSocketService.getConnectedClients()}`,
+    );
   }
 
   handleDisconnect(client: Socket) {
-    console.log(`Client disconected ${client.id}`);
+    this.messageWebSocketService.removeClient(client.id);
+
+    console.log(
+      `Connected Clients: ${this.messageWebSocketService.getConnectedClients()}`,
+    );
   }
 }
