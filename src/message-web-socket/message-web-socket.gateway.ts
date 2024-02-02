@@ -2,14 +2,18 @@ import {
   OnGatewayConnection,
   OnGatewayDisconnect,
   WebSocketGateway,
+  WebSocketServer,
 } from '@nestjs/websockets';
 import { MessageWebSocketService } from './message-web-socket.service';
-import { Socket } from 'socket.io';
+import { Server, Socket } from 'socket.io';
 
 @WebSocketGateway({ cors: true })
 export class MessageWebSocketGateway
   implements OnGatewayConnection, OnGatewayDisconnect
 {
+  @WebSocketServer()
+  wss: Server;
+
   constructor(
     private readonly messageWebSocketService: MessageWebSocketService,
   ) {}
@@ -17,8 +21,9 @@ export class MessageWebSocketGateway
   handleConnection(client: Socket, ...args: any[]) {
     this.messageWebSocketService.registerClient(client);
 
-    console.log(
-      `Connected Clients: ${this.messageWebSocketService.getConnectedClients()}`,
+    this.wss.emit(
+      'clients-updated',
+      this.messageWebSocketService.getConnectedClients(),
     );
   }
 
