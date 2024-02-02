@@ -31,14 +31,26 @@ export class MessageWebSocketGateway
 
   handleDisconnect(client: Socket) {
     this.messageWebSocketService.removeClient(client.id);
-
-    console.log(
-      `Connected Clients: ${this.messageWebSocketService.getConnectedClients()}`,
-    );
   }
 
   @SubscribeMessage('message-from-client')
   handleMessageFromClient(client: Socket, payload: NewMessageDto) {
-    console.log(client.id, payload);
+    //! Emit message only to the client
+    client.emit('message-from-server', {
+      fullname: 'I am the server',
+      message: `Ey! You said ${payload.message || 'no-message!'}`,
+    });
+
+    //! Emit message to everyone, but not to the client
+    client.broadcast.emit('message-from-server', {
+      fullname: 'I am the server',
+      message: `Ey! ${client.id} said ${payload.message || 'no-message!'}`,
+    });
+
+    //! Emit message to everyone
+    this.wss.emit('message-from-server', {
+      fullname: 'I am the server',
+      message: 'Bored!',
+    });
   }
 }
