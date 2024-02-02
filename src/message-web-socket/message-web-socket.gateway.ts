@@ -23,20 +23,17 @@ export class MessageWebSocketGateway
     private readonly jwtService: JwtService,
   ) {}
 
-  handleConnection(client: Socket, ...args: any[]) {
+  async handleConnection(client: Socket, ...args: any[]) {
     const token = client.handshake.headers.authentication as string;
     let payload: JwtPayload;
 
     try {
       payload = this.jwtService.verify(token);
+      await this.messageWebSocketService.registerClient(client, payload.id);
     } catch (error) {
       client.disconnect();
       return;
     }
-
-    console.log({ payload });
-
-    this.messageWebSocketService.registerClient(client);
 
     this.wss.emit(
       'clients-updated',
@@ -50,22 +47,22 @@ export class MessageWebSocketGateway
 
   @SubscribeMessage('message-from-client')
   handleMessageFromClient(client: Socket, payload: NewMessageDto) {
-    //! Emit message only to the client
-    client.emit('message-from-server', {
-      fullname: 'I am the server',
-      message: `Ey! You said ${payload.message || 'no-message!'}`,
-    });
+    // //! Emit message only to the client
+    // client.emit('message-from-server', {
+    //   fullname: 'I am the server',
+    //   message: `Ey! You said ${payload.message || 'no-message!'}`,
+    // });
 
-    //! Emit message to everyone, but not to the client
-    client.broadcast.emit('message-from-server', {
-      fullname: 'I am the server',
-      message: `Ey! ${client.id} said ${payload.message || 'no-message!'}`,
-    });
+    // //! Emit message to everyone, but not to the client
+    // client.broadcast.emit('message-from-server', {
+    //   fullname: this.messageWebSocketService.getUserFullName(client.id),
+    //   message: `Ey! ${client.id} said ${payload.message || 'no-message!'}`,
+    // });
 
     //! Emit message to everyone
     this.wss.emit('message-from-server', {
-      fullname: 'I am the server',
-      message: 'Bored!',
+      fullname: this.messageWebSocketService.getUserFullName(client.id),
+      message: payload.message || 'no-message!',
     });
   }
 }
