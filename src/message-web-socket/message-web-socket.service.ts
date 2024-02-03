@@ -21,6 +21,8 @@ export class MessageWebSocketService {
 
     if (!user || !user.isActive) throw new Error('User not found');
 
+    this.checkUserConnection(user);
+
     this.connectedClients[client.id] = { socket: client, user: user };
   }
 
@@ -34,5 +36,16 @@ export class MessageWebSocketService {
 
   getUserFullName(socketId: string) {
     return this.connectedClients[socketId].user.fullname;
+  }
+
+  private checkUserConnection(user: User) {
+    for (const clientId of Object.keys(this.connectedClients)) {
+      const connectedClient = this.connectedClients[clientId];
+
+      if (connectedClient.user.id === user.id) {
+        connectedClient.socket.disconnect();
+        break;
+      }
+    }
   }
 }
